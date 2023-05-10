@@ -343,6 +343,22 @@ function getmilechild(childtasks,childid,milestone){
 
 }
 
+//=====================
+//formatting the date
+
+function getdate(data){
+
+  const parts = data.split('-');
+  const day = parts[0];
+  const mon = parts[1];
+  const year = parts[2];
+  let formdated = year +"-"+ mon+"-"+day
+  return formdated
+
+
+
+}
+
 
 
 //==================================================================================================================================================
@@ -388,16 +404,15 @@ app.post("/updates",(req,res)=>{     //previously post
         // mile = getmile(data,parentId) // this function follows the rollowing down approach
 
         console.log("===========================================================================================================")
-        console.log("UPDATED DATA RETURNED FROM SEGDATA:")
+        // console.log("UPDATED DATA FROM SEGDATA")
         // console.log(segdata)
-        console.log("===========================================================================================================")
-
+        
         
       }};
 
+      //modifying the segdata wrt to the rowdata
       let finaldate=[];
-
-      for (let i =1; i<segdata.length;i++){
+        for (let i =0; i<segdata.length;i++){
         let wbs = segdata[i].wbs;
         let StartedOn = segdata[i].StartedOn;
         let CompletedOn = segdata[i].CompletedOn;
@@ -407,11 +422,33 @@ app.post("/updates",(req,res)=>{     //previously post
         const data = {
             wbs,StartedOn, CompletedOn, Weightage
         }
-
         finaldate.push(data);
 
       }
 
+      //updating the format dates from yyyy-mm-dd to dd-mm-yyyy
+      for(let i=0; i<finaldate.length;i++){
+        let StartedOn = finaldate[i].StartedOn;
+        formdate = getdate(StartedOn)
+        finaldate[i].StartedOn=formdate
+        console.log(formdate)
+      }
+
+      for(let i=0; i<finaldate.length;i++){
+        let CompletedOn = finaldate[i].CompletedOn;
+        formdate = getdate(CompletedOn)
+        finaldate[i].CompletedOn=formdate
+        console.log(formdate)
+      }
+
+
+
+
+
+      console.log("===========================================================================================================")
+      console.log("FINAL DATE-:")
+      console.log(finaldate)
+      
       res.send(finaldate)
 
 
