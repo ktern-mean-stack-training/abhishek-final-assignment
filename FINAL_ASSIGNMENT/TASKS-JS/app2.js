@@ -234,6 +234,115 @@ function segregatedata(data,parentId){
 
 }  //EOF
 
+//===================================================================================================================
+
+//FUNTION TO DIVIDE THE MILESTONE OF THE PARENT TASK TO ALL ITS CHILDREN
+
+function getmile(childtasks,parentId){
+
+  console.log("at getmile function")
+  parentmile = childtasks[0].Milestone
+  let childrens = [];
+  console.log(parentId)
+  console.log(typeof(parentId))
+  let childesttasks=[];
+    // for (let child of childtasks) {
+    for (let i=0; i<childtasks.length;i++){
+
+      tx= childtasks[i].refid;
+      ty= tx.toString()
+      tp= parentId
+      ts = parentId.toString()
+      if (ty === ts) {
+        childrens.push(childtasks[i]);
+      }
+    }
+
+    console.log("these are childrens of the parent");
+    console.log(childrens);
+
+    if (childrens.length>0){
+      let share = parseFloat((parentmile / childrens.length).toFixed(2));
+      console.log("share given by the parent to each of its child:");
+      console.log(share);
+      console.log("=============================")
+  
+
+      for (let i=0; i< childrens.length;i++){
+        childrens[i].Milestone=share;
+        let childest = getmilechild(childtasks,childrens[i].wbs,childrens[i].Milestone);
+
+        childesttasks.push(childest);
+        console.log("updated childesttasks:");
+        console.log(childesttasks);
+        
+        console.log("these are childest task shared by recursive:");
+        console.log(childesttasks);//we need this
+        
+      }
+    };
+
+    let mergechild = childrens.concat(childesttasks);
+    return mergechild; // along with child tasks of parent, here grand child tasks are also included[ie from getmilechild also]
+
+
+  
+}
+//========================================================================================================================================
+//consider this as a sub function to run a recursive loop on childest tasks of parent for milestones of grandchild tasks.
+function getmilechild(childtasks,childid,milestone){
+  console.log("at getmilechild, second get")
+  let parentmile = milestone
+  console.log("childest tasks of",childid,"are:");
+  let childrens = [];
+
+  for (let i=0; i<childtasks;i++){
+
+    tx= childtasks[i].refid;
+    ty= tx.toString()
+    tp= childid
+    ts = tp.toString()
+      
+    if (childtasks[i].refid === childid){
+      childrens.push(child);
+    }
+  }
+
+  console.log(childrens);
+
+  let childmilestone=[];
+
+  if(childrens.length>0){
+
+    let share = parseFloat((parentmile / childrens.length).toFixed(2));
+    console.log("share given by the parent to each of its child:");
+    console.log(share);
+    console.log("=============================")
+  
+  for (let i=0;i<childrens;i++){
+
+    childrens[i].Milestone=share
+    console.log("pushing into getmilechild");
+    console.log(childrens[i])
+    childmilestone.push(childrens[i]);
+    console.log("updated childmilestone:");
+      console.log(childmilestone);
+      console.log("getmilechild calling")
+      let grandchildren= getmilechild(childtasks,childrens[i].wbs,childrens[i].Milestone)
+      childmilestone = childmilestone.concat(grandchildren);
+
+  }};
+
+  console.log("these are chldmilestone :");
+  console.log(childmilestone); //here we need this
+  
+  // return childrens
+  return childmilestone // [updating the milestone of childest tasks of parent and sharing it to child tasks array]
+    
+
+
+}
+
 
 
 //==================================================================================================================================================
@@ -242,7 +351,9 @@ app.get('/', (req, res) => {
     
 });
 //======================================================
-app.post("/updates",(req,res)=>{
+app.post("/updates",(req,res)=>{     //previously post
+
+    //data received from ag-grid through req
     console.log("at updates upi, the data is :")
     const data = req.body;
 
@@ -274,15 +385,45 @@ app.post("/updates",(req,res)=>{
 
         //calling functions......
         segdata = segregatedata(data,parentId); //this function follows the rolling up approach
+        // mile = getmile(data,parentId) // this function follows the rollowing down approach
 
         console.log("===========================================================================================================")
         console.log("UPDATED DATA RETURNED FROM SEGDATA:")
-        console.log(segdata)
-
+        // console.log(segdata)
         console.log("===========================================================================================================")
+
+        
       }};
+
+      let finaldate=[];
+
+      for (let i =1; i<segdata.length;i++){
+        let wbs = segdata[i].wbs;
+        let StartedOn = segdata[i].StartedOn;
+        let CompletedOn = segdata[i].CompletedOn;
+        let Weightage = segdata[i].Weightage;
+        let Milestone = segdata[i].Milestone;
+
+        const data = {
+            wbs,StartedOn, CompletedOn, Weightage
+        }
+
+        finaldate.push(data);
+
+      }
+
+      res.send(finaldate)
+
+
     
 });
+
+
+app.get("/updates",(req,res)=>{
+
+  res.send("get api")
+
+})
 
 
 

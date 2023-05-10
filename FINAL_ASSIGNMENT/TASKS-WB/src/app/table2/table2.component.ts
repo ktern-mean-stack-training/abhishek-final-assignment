@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { GridApi, GridOptions } from 'ag-grid-community';
 import { AgGridAngular } from 'ag-grid-angular';
 import { formatDate } from '@angular/common';
+import { catchError } from 'rxjs';
 // import 'ag-grid-community/dist/styles/ag-grid.css';
 // import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
@@ -132,10 +133,10 @@ export class Table2Component {
       if(item.TASK1 !== undefined || item.TASK2 !== undefined || item.TASK3 !== undefined || item.TASK4 !== undefined){
         // console.log(item)
         const getdate = this.formdate(item.CompletedOn)
-        console.log("this is the formatted date:")
-        console.log(getdate)
+        // console.log("this is the formatted date:")
+        // console.log(getdate)
         item.CompletedOn=getdate
-        console.log(item)
+        // console.log(item)
 
 
       }
@@ -212,11 +213,6 @@ export class Table2Component {
 
       }
 
-
-
-
-
-
       // console.log("this is the parent data of this .........")
       // console.log(parentData)
     }
@@ -228,8 +224,6 @@ export class Table2Component {
   }
 
 
-
-
   //===============
   //TO SEND THE VARIABLE TO AN API ENDPOINT
   sendVariableToAPI(variable: any): void {
@@ -237,10 +231,9 @@ export class Table2Component {
     console.log(variable);
     const apiUrl = 'http://localhost:4000/updates';
 
-    // Make an HTTP POST request to the API endpoint
     this.http.post(apiUrl, variable).subscribe(
       response => {
-        console.log('Variable sent successfully:', response);
+        console.log('Variable sent successfully & this is the updated data:', response);
         // Handle the response from the API if needed
       },
       error => {
@@ -248,14 +241,43 @@ export class Table2Component {
         // Handle the error if needed
       }
     );
-  }
+
+
+    // Make an HTTP POST request to the API endpoint
+    // this.http.post(apiUrl, variable).pipe(
+    //   catchError(error=>{
+    //     console.error('Error sending variable:', error);
+
+    //     throw error;
+    //   })
+    // ).subscribe(response=>{
+    //   console.log('Variable sent successfully:', response);
+    // })
+
+
+  };
+
+
+// //   //===============
+//   //TO GET THE DATA FROM THE API
+//   getVariableFromAPI(): void {
+//     const apiUrl = 'http://localhost:4000/updates';
+//     // Make an HTTP GET request to fetch the data from the API
+
+//     this.http.get<any>(apiUrl).subscribe({
+//       next: (data:any[])=>{
+
+//         console.log('Data received from API:', data);
+
+//       }
+
+//     });
+// }
+
+
+
 
 }
-
-
-
-
-
 
 
 
