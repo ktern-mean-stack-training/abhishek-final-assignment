@@ -22,6 +22,8 @@ export class Table2Component {
   rowData: any[] = [];
   rowDataObject: any[] =[];
   wbsDataObject: any[]=[];
+  deflattenedData: any[] = [];
+
   //===============TO FETCH THE DATA FROM EXCEL TO AG GRID========================
   onFileChange(event: any): void {
     const file = event.target.files[0];
@@ -230,9 +232,10 @@ export class Table2Component {
   };
 
   updateRowData(updatedData: any): void{
+    //UPDATING THE ROWDATA FIELDS WITH OUR BACKEND UPDATED DATA
     //ITERATING OVER THE BACKEND UPDATED DATA
-    console.log("at updateRowData.............");
-    console.log(updatedData)
+    // console.log("at updateRowData.............");
+    // console.log(updatedData)
 
     let agupdata=[];
     for (const item of updatedData){
@@ -261,11 +264,41 @@ export class Table2Component {
       // }
 
     }
-
+    //================================================
     console.log("this is the updated row data as an object")
-    console.log(agupdata)
+    console.log(agupdata);
+    //================================================
+
+    this.deflattenedData=this.deflattenArray(agupdata);
+    console.log("this is the defflatten array")
+    console.log(this.deflattenedData)
+
   }
 
+
+  replaceData():void{
+    const newdata = this.deflattenedData;
+    this.rowData = newdata
+  }
+
+
+//TO DE FLATTEN THE ARRAY INTO HEADER AND ROW
+  deflattenArray<T extends Record<string, any>>(array: T[]) {
+    // Extract unique keys
+    const keys = Array.from(
+      new Set(array.flatMap((obj) => Object.keys(obj)))
+    );
+
+    // Create header row
+    const headerRow: (keyof T)[] = keys;
+
+    // Create row objects
+    const rows = array.map((obj) =>
+      keys.map((key) => obj[key] ?? null)
+    );
+
+    return [headerRow, ...rows];
+  }
 
 
 
@@ -274,13 +307,9 @@ export class Table2Component {
 
 
 
-
-
-
-
-
-
-
+function obj(this: undefined, value: any, index: number, array: any[]): unknown {
+  throw new Error('Function not implemented.');
+}
 /*
   convertDataToObjects(jsonData: any[]): void {
   if (jsonData.length > 1) {
