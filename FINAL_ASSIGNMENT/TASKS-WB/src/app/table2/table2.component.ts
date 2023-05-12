@@ -21,7 +21,7 @@ export class Table2Component {
   columnDefs: any[] = [];
   rowData: any[] = [];
   rowDataObject: any[] =[];
-  wbsDataObject: any[]=[];
+  // wbsDataObject: any[]=[];
   deflattenedData: any[] = [];
 
   //===============TO FETCH THE DATA FROM EXCEL TO AG GRID========================
@@ -70,7 +70,7 @@ export class Table2Component {
     console.log("this is row data as an object")
     console.log(this.rowDataObject); //converting the data at ag-grid into an object array
     const variableToSend = this.rowDataObject;
-    const wbs = this.insertWBS(variableToSend);
+    const wbs = this.insertWBS(variableToSend); //to insert wbs and formatting the dates
     const api= this.sendVariableToAPI(wbs); //to send the variable to backend
     //==========
   }
@@ -213,7 +213,7 @@ export class Table2Component {
   }
   //===============
   //TO SEND THE VARIABLE TO AN API ENDPOINT
-  sendVariableToAPI(variable: any): void {
+  sendVariableToAPI(variable: any): void {    //here variable refers to the data that it is being received while calling from the convertDataToObjects
     console.log("this is the variable shared to api function:")
     console.log(variable);
     const apiUrl = 'http://localhost:4000/updates';
